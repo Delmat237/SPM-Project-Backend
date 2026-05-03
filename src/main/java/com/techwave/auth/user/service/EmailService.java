@@ -56,14 +56,19 @@ public class EmailService {
                 "h2 { color: #0f172a; margin-top: 0; }" +
                 "p { color: #4b5563; line-height: 1.6; font-size: 16px; }" +
                 "</style></head><body><div class='wrapper'><div class='container'>" +
-                "<div class='header'><h1>TechWave NTA</h1></div>" +
+                "<div class='header'><h1>SPM - Club GI ENSPY</h1></div>" +
                 "<div class='content'>" +
+                "<p style='font-style: italic; color: #64748b; margin-bottom: 30px;'>" +
+                "Le projet SPM (Solution de Gestion de Projets Modulaire) est une initiative open source de la Cellule Projet du Club Génie Informatique de l’ENSPY. " +
+                "Il vise à fournir une alternative gratuite et sans limitation d’utilisateurs aux outils propriétaires (Jira, Trello), " +
+                "exploitant les compétences locales pour créer une plateforme scalable." +
+                "</p>" +
                 "<h2>" + title + "</h2>" +
                 "<p>Bonjour " + name + ",</p>" +
                 "<p>" + description + "</p>" +
                 "<a href='" + link + "' class='button'>" + buttonText + "</a>" +
                 "<p style='font-size: 14px; color: #94a3b8;'>Si le bouton ne fonctionne pas, copiez et collez ce lien :<br>" + link + "</p>" +
-                "</div><div class='footer'><p>© 2026 TechWave. Tous droits réservés.</p></div>" +
+                "</div><div class='footer'><p>© 2026 Club Génie Informatique ENSPY. Tous droits réservés.</p></div>" +
                 "</div></div></body></html>";
     }
 
@@ -79,14 +84,20 @@ public class EmailService {
                 "h2 { color: #0f172a; margin-top: 0; }" +
                 "p { color: #4b5563; line-height: 1.6; font-size: 16px; }" +
                 "</style></head><body><div class='wrapper'><div class='container'>" +
-                "<div class='header'><h1>TechWave NTA</h1></div>" +
+                "<div class='header'><h1>SPM - Club GI ENSPY</h1></div>" +
                 "<div class='content'>" +
+                "<div style='text-align: left; background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #4f46e5;'>" +
+                "<p style='margin: 0; font-size: 14px; color: #475569;'>" +
+                "<strong>À propos du projet :</strong> Le projet SPM (Solution de Gestion de Projets Modulaire) est une initiative open source de la Cellule Projet du Club Génie Informatique de l’ENSPY. " +
+                "Il vise à fournir une alternative gratuite aux outils propriétaires (Jira, Trello), tout en formant la nouvelle génération de développeurs full-stack." +
+                "</p>" +
+                "</div>" +
                 "<h2>Vérification de votre compte</h2>" +
                 "<p>Bonjour " + name + ",</p>" +
                 "<p>Bienvenue ! Pour activer votre compte et commencer à utiliser nos services, veuillez saisir le code de vérification suivant :</p>" +
                 "<div class='code-box'>" + code + "</div>" +
                 "<p style='font-size: 14px; color: #94a3b8;'>Ce code est valide pendant 1 heure. Ne le partagez avec personne.</p>" +
-                "</div><div class='footer'><p>© 2026 TechWave. Tous droits réservés.</p></div>" +
+                "</div><div class='footer'><p>© 2026 Club Génie Informatique ENSPY. Tous droits réservés.</p></div>" +
                 "</div></div></body></html>";
     }
 }
