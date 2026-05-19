@@ -1,0 +1,19 @@
+{
+  "project": "Projet de Test SPM",
+  "projectKey": "PDTS",
+  "exportedAt": "2026-05-19T22:25:43.097685464",
+  "totalTasks": 1,
+  "tasks": [
+    {
+      "key": "PDTS-1",
+      "title": "Implémenter la validation",
+      "description": "Faire les tests de l'application pas à pas",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "assignee": null,
+      "startDate": null,
+      "dueDate": "2026-06-30",
+      "createdAt": "2026-05-19T22:25:42.621626"
+    }
+  ]
+}

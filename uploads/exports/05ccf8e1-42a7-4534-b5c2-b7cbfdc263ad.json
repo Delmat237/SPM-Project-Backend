@@ -1,0 +1,19 @@
+{
+  "project": "Projet Collaboratif 1779226190",
+  "projectKey": "PC11",
+  "exportedAt": "2026-05-19T22:30:08.898789230",
+  "totalTasks": 1,
+  "tasks": [
+    {
+      "key": "PC11-1",
+      "title": "Tâche de validation multi-users",
+      "description": "Tester la notification par mention",
+      "status": "TODO",
+      "priority": "HIGH",
+      "assignee": null,
+      "startDate": null,
+      "dueDate": "2026-06-30",
+      "createdAt": "2026-05-19T22:30:07.749216"
+    }
+  ]
+}

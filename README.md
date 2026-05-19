@@ -1,6 +1,6 @@
-# 🚀 SPM Backend — Service d'Authentification
+# 🚀 SPM Backend — Plateforme Modulaire de Gestion de Projet (Style Jira)
 
-> **SPM** (Solution de Gestion de Projets Modulaire) — Backend d'authentification et de gestion des utilisateurs.  
+> **SPM** (Solution de Gestion de Projets Modulaire) est un backend complet de gestion de projets agile (style Jira) avec collaboration en temps réel, diagramme de Gantt, tableau Kanban dynamique, et exports asynchrones.  
 > Développé par la **Cellule Projet** du **Club Génie Informatique de l'ENSPY**.
 
 ---
@@ -8,13 +8,14 @@
 ## 📋 Table des matières
 
 - [Technologies](#-technologies)
-- [Architecture](#-architecture)
+- [Architecture & Modules](#-architecture--modules)
 - [Installation](#️-installation)
 - [Configuration](#-configuration)
 - [API Endpoints](#-api-endpoints)
-- [Sécurité & Rôles](#-sécurité--rôles)
-- [Swagger](#-swagger)
+- [Temps Réel via WebSockets (STOMP)](#-temps-réel-via-websockets-stomp)
+- [Documentation interactive (Swagger / OpenAPI)](#-documentation-interactive-swagger--openapi)
 - [Docker](#-docker)
+- [Script de Démo & Test rapide](#-script-de-démo--test-rapide)
 
 ---
 
@@ -22,50 +23,32 @@
 
 | Catégorie | Technologie |
 |-----------|-------------|
-| Langage | Java 17 |
-| Framework | Spring Boot 3.4.5 |
-| Base de données | PostgreSQL |
-| Sécurité | Spring Security + JWT (jjwt 0.11.5) |
-| OAuth | Google SSO (google-api-client) |
-| Email | Spring Mail (SMTP Gmail) |
-| Documentation | Swagger UI (SpringDoc OpenAPI 2.8.5) |
-| Build | Maven |
-| Outils | Lombok, Dotenv |
-| Containerisation | Docker (multi-stage build) |
+| **Langage** | Java 17 |
+| **Framework principal** | Spring Boot 3.4.5 |
+| **Base de données** | PostgreSQL 14+ |
+| **Sécurité** | Spring Security + JWT (HS512) |
+| **OAuth** | Google SSO (ID Token Verification) |
+| **Temps Réel** | Spring WebSocket + STOMP Broker |
+| **Documentation** | Swagger UI (SpringDoc OpenAPI 2.8.5) |
+| **Emailing** | JavaMail (SMTP Gmail) |
+| **Build & Docker** | Maven, Multi-stage Dockerfile |
 
 ---
 
-## 🏗 Architecture
+## 🏗 Architecture & Modules
+
+Le projet est structuré en plusieurs modules métiers distincts :
 
 ```
 src/main/java/com/techwave/auth/
-├── AuthApplication.java                  # Point d'entrée Spring Boot
-└── user/
-    ├── controller/
-    │   ├── AuthController.java           # Endpoints d'authentification
-    │   ├── UserController.java           # Endpoints de gestion utilisateurs
-    │   └── ErrorResponse.java            # DTO de réponse d'erreur
-    ├── dao/
-    │   ├── LoginRequest.java             # DTO de connexion
-    │   ├── LoginResponse.java            # DTO de réponse (token + user info)
-    │   └── RegisterRequest.java          # DTO d'inscription (avec validation)
-    ├── model/
-    │   ├── User.java                     # Entité JPA (implémente UserDetails)
-    │   ├── UserRole.java                 # Enum des rôles (USER, ADMIN)
-    │   ├── VerificationToken.java        # Token OTP d'activation de compte
-    │   └── PasswordResetToken.java       # Token de réinitialisation de mot de passe
-    ├── repository/
-    │   ├── UserRepository.java           # Accès BDD utilisateurs
-    │   ├── VerificationTokenRepository.java
-    │   └── PasswordResetTokenRepository.java
-    ├── security/
-    │   ├── SecurityConfig.java           # Config Spring Security + CORS
-    │   ├── JwtUtil.java                  # Génération & validation JWT (HS512)
-    │   └── JwtAuthenticationFilter.java  # Filtre d'interception des requêtes
-    └── service/
-        ├── UserService.java              # Logique métier utilisateurs (CRUD)
-        ├── EmailService.java             # Envoi d'emails HTML (activation, reset)
-        └── CustomUserDetailsService.java # Chargement utilisateur pour Spring Security
+├── AuthApplication.java          # Point d'entrée principal
+├── admin/                        # Module Administration (Régulation système)
+├── analytics/                    # Module Analytics & Rapports (Burndown, Vélocité, Export)
+├── collaboration/                # Module Collaboration (Commentaires @mentions, Fichiers, Notifications)
+├── common/                       # Gestion des exceptions, DTOs globaux
+├── project/                      # Module Projets & Tâches (Membres, Invitations, Gantt, Kanban, FSM)
+├── user/                         # Module Utilisateurs (Profils, Authentification locale & Google)
+└── websocket/                    # Configuration & Contrôleur WebSockets (STOMP)
 ```
 
 ---
@@ -78,48 +61,37 @@ src/main/java/com/techwave/auth/
 - **Maven 3.9+**
 - **PostgreSQL 14+**
 
-### 1. Cloner le projet
-
-```bash
-git clone <url-du-repo>
-cd Backend-SPM
-```
-
-### 2. Créer la base de données PostgreSQL
+### 1. Initialiser la base de données PostgreSQL
 
 ```sql
--- Se connecter à psql
-sudo -u postgres psql
-
--- Créer la base et l'utilisateur
 CREATE DATABASE bd_spm;
-CREATE USER user_bd_spm WITH PASSWORD 'votre_mot_de_passe';
+CREATE USER user_bd_spm WITH PASSWORD 'spm1234';
 GRANT ALL PRIVILEGES ON DATABASE bd_spm TO user_bd_spm;
 ALTER DATABASE bd_spm OWNER TO user_bd_spm;
 ```
 
-### 3. Configurer l'environnement
+### 2. Configurer le fichier d'environnement
 
-Copier le fichier d'exemple et remplir les valeurs :
+Copier le fichier d'exemple et modifier les configurations :
 
 ```bash
 cp .env.example .env
 ```
 
-### 4. Lancer l'application
+### 3. Compiler & Lancer
 
 ```bash
 mvn clean install
 mvn spring-boot:run
 ```
 
-L'application démarre sur **http://localhost:8082**
+L'application démarrera par défaut sur le port **8082** : **http://localhost:8082**
 
 ---
 
-## ⚙ Configuration
+## ⚙ Configuration (.env)
 
-Créez un fichier `.env` à la racine du projet avec les variables suivantes :
+Créez un fichier `.env` à la racine pour surcharger les valeurs par défaut :
 
 ```env
 SERVER_PORT=8082
@@ -127,138 +99,107 @@ SERVER_PORT=8082
 # Base de données PostgreSQL
 URL_BD=jdbc:postgresql://localhost:5432/bd_spm
 DB_USERNAME=user_bd_spm
-DB_PASSWORD=votre_mot_de_passe
+DB_PASSWORD=spm1234
 
-# JWT
-JWT_SECRET=votre_secret_jwt_tres_long_et_securise_minimum_64_caracteres
+# Sécurité & JWT
+JWT_SECRET=un_secret_jwt_tres_long_et_securise_minimum_512_bits_pour_HS512
 JWT_EXPIRATION=1500000
 
-# Email SMTP (Gmail)
+# Email (SMTP Gmail)
 SPRING_MAIL_USERNAME=votre_email@gmail.com
-SPRING_MAIL_PASSWORD=votre_mot_de_passe_application
+SPRING_MAIL_PASSWORD=votre_mot_de_passe_d_application
 
-# URLs de l'application
+# URLs applicatives
 APP_BACKEND_URL=http://localhost:8082
 APP_FRONTEND_URL=http://localhost:5173
-
-# OAuth Google
-GOOGLE_CLIENT_ID=votre_google_client_id
 ```
-
-> **Note** : Pour Gmail, utilisez un [mot de passe d'application](https://support.google.com/accounts/answer/185833) et non votre mot de passe principal.
 
 ---
 
 ## 🌐 API Endpoints
 
-### 🔓 Authentification — `/api/auth`
+Tous les endpoints REST (sauf `/api/auth/**`) requièrent le header `Authorization: Bearer <TOKEN_JWT>`.
 
-| Méthode | Endpoint | Description | Body / Params |
-|---------|----------|-------------|---------------|
-| `POST` | `/api/auth/register` | Inscription (envoi OTP par email) | `{ email, password, nom, telephone?, pays? }` |
-| `POST` | `/api/auth/login` | Connexion classique | `{ email, password }` |
-| `POST` | `/api/auth/google` | Connexion via Google SSO | `{ token }` |
-| `POST` | `/api/auth/verify-otp` | Activer le compte avec le code OTP | `?email=...&code=...` |
-| `POST` | `/api/auth/resend-activation` | Renvoyer le code OTP | `?email=...` |
-| `POST` | `/api/auth/forgot-password` | Demander un lien de reset password | `?email=...` |
-| `POST` | `/api/auth/reset-password` | Réinitialiser le mot de passe | `?token=...&newPassword=...` |
+### 🔑 1. Authentification — `/api/auth`
+- `POST /register` : Inscription d'un utilisateur (génère un OTP)
+- `POST /verify-otp` : Vérification du code OTP et activation du compte
+- `POST /login` : Authentification locale et retour du JWT
+- `POST /google` : Authentification via Google SSO
+- `POST /forgot-password` / `POST /reset-password` : Réinitialisation de mot de passe
 
-### 👤 Utilisateurs — `/api/users`
+### 📂 2. Gestion de Projets — `/api/projects`
+- `GET /` : Liste des projets de l'utilisateur (paginée)
+- `POST /` : Créer un projet (l'auteur devient `OWNER`)
+- `GET /{id}` : Détails d'un projet
+- `PATCH /{id}` / `DELETE /{id}` : Modifier/Supprimer (soft delete) un projet
+- `POST /{id}/members` : Inviter un collaborateur par e-mail
+- `PATCH /{id}/members/{userId}` : Modifier le rôle d'un membre (`ADMIN`, `MEMBER`, `READER`)
+- `DELETE /{id}/members/{userId}` : Retirer un membre du projet
 
-| Méthode | Endpoint | Rôle requis | Description |
-|---------|----------|-------------|-------------|
-| `GET` | `/api/users` | `ADMIN` | Lister tous les utilisateurs |
-| `POST` | `/api/users` | `ADMIN` | Créer un utilisateur |
-| `PUT` | `/api/users/{id}` | `ADMIN` | Modifier un utilisateur |
-| `DELETE` | `/api/users/{id}` | `ADMIN` | Supprimer un utilisateur |
-| `PUT` | `/api/users/me` | `USER` | Modifier son propre profil |
-| `DELETE` | `/api/users/me` | `USER` | Désactiver son propre compte |
+### 📋 3. Gestion des Tâches — `/api/projects/{projectId}/tasks`
+- `GET /` : Liste des tâches (supporte les filtres `status`, `assignee`, `priority`, et les vues `?view=kanban` ou `?view=gantt`)
+- `POST /` : Créer une tâche
+- `PATCH /{taskId}/status` : Changer le statut d'une tâche via la **Machine à États (FSM)**
+- `DELETE /{taskId}` / `PATCH /{taskId}/restore` : Soft-delete et restauration de tâche
+- `GET /{taskId}/subtasks` / `POST /{taskId}/subtasks` : Gestion des sous-tâches
 
-### Exemple de réponse login
+### 💬 4. Collaboration & Fichiers
+- `GET /api/tasks/{taskId}/comments` / `POST /api/tasks/{taskId}/comments` : Gestion des commentaires (supporte les mentions `@email@domain.com` qui déclenchent des notifications)
+- `POST /api/tasks/{taskId}/attachments` : Upload d'un fichier joint (limite 100 Mo)
+- `GET /api/attachments/{id}/download` : Récupère une URL temporaire signée et sécurisée
+- `GET /api/notifications` : Liste paginée des notifications personnelles de l'utilisateur
 
-```json
-{
-  "token": "eyJhbGciOiJIUzUxMiJ9...",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nom": "Jean Dupont",
-    "roles": ["ROLE_USER"]
-  }
-}
-```
-
----
-
-## 🔐 Sécurité & Rôles
-
-### Authentification
-
-- **JWT stateless** signé avec HS512
-- Token transmis via header `Authorization: Bearer <token>`
-- Sessions désactivées (STATELESS)
-
-### Rôles
-
-| Rôle | Accès |
-|------|-------|
-| **Public** | Inscription, Connexion, OTP, Reset Password, Swagger |
-| **USER** | Accès et modification de son propre profil |
-| **ADMIN** | Gestion complète de tous les utilisateurs |
-
-### Flux d'inscription
-
-```
-1. POST /register  →  Création compte (disabled) + envoi OTP par email
-2. POST /verify-otp  →  Validation du code 6 chiffres → compte activé
-3. POST /login  →  Connexion → réception du JWT
-```
-
-### Flux de reset password
-
-```
-1. POST /forgot-password  →  Envoi d'un lien par email
-2. Clic sur le lien  →  Redirection vers le frontend
-3. POST /reset-password  →  Nouveau mot de passe enregistré
-```
-
-### CORS
-
-Origines autorisées : `http://localhost:5173` (configurable dans `SecurityConfig.java`)
+### 📊 5. Analytics & Rapports
+- `GET /api/projects/{id}/analytics/summary` : Résumé d'avancement (complétées, en retard, etc.)
+- `GET /api/projects/{id}/analytics/burndown` : Données du Burndown Chart par dates
+- `GET /api/projects/{id}/analytics/velocity` : Vélocité de l'équipe par sprint
+- `POST /api/projects/{id}/export` : Lancer un export asynchrone (retourne un `jobId`)
+- `GET /api/exports/{jobId}` : Polling du statut de l'export (`PENDING`, `DONE`, `FAILED`)
 
 ---
 
-## 📖 Swagger
+## ⚡ Temps Réel via WebSockets (STOMP)
 
-Une fois l'application lancée, la documentation interactive est disponible :
+Le backend diffuse des événements en temps réel via des connexions WebSocket.
+- **Endpoint WebSocket** : `/ws` (Handshake HTTP requis, passez `Authorization: Bearer <TOKEN>` dans les headers STOMP)
 
-👉 **http://localhost:8082/swagger-ui/index.html**
+### Topics de souscription
+- `/topic/project/{projectId}` : Événements liés au projet (`task.created`, `task.updated`, `task.moved`, `member.joined`, etc.)
+- `/topic/task/{taskId}/comments` : Événements sur les commentaires d'une tâche (`comment.created`, `comment.updated`)
+- `/user/queue/notifications` : Notifications instantanées privées destinées à l'utilisateur connecté
+
+---
+
+## 📖 Swagger / OpenAPI
+
+La documentation interactive et exhaustive des endpoints est accessible à l'adresse suivante lorsque l'application est démarrée :
+
+👉 **[http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)**
 
 ---
 
 ## 🐳 Docker
 
-### Build & Run
-
+### Build de l'image
 ```bash
-# Construire l'image
 docker build -t spm-backend .
+```
 
-# Lancer le conteneur
+### Exécution du conteneur
+```bash
 docker run -p 8082:8082 --env-file .env spm-backend
 ```
 
-### Dockerfile (multi-stage)
+---
 
-- **Build** : Maven 3.9.6 + Eclipse Temurin 21
-- **Runtime** : Eclipse Temurin 21 JDK
+## 🧪 Script de Test de Démonstration
+
+Un script Python interactif est fourni pour valider l'ensemble du workflow REST (de l'inscription au polling d'export). Pour l'exécuter localement :
+
+```bash
+python3 "/home/negou/.gemini/antigravity/brain/68f45156-84c1-4716-bf61-56cc454fb45b/scratch/demo_test.py"
+```
 
 ---
 
-## 📄 Licence
-
-Projet open source développé par le Club Génie Informatique de l'ENSPY.
-
----
-
-*Développé avec ❤️ pour le projet SPM — Club GI ENSPY © 2026*
+*Développé par l'equipe Backend pour le projet SPM — Club GI ENSPY © 2026*

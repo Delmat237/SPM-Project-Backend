@@ -39,8 +39,29 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
+                        // URL signée de téléchargement (authentifiée par token dans l'URL)
+                        .requestMatchers("/api/attachments/file/**").permitAll()
+
+                        // Endpoints WebSocket (sécurisés au niveau STOMP par token)
+                        .requestMatchers("/ws/**").permitAll()
 
                         .requestMatchers("/api/users/me").authenticated()
+
+                        .requestMatchers("/api/projects/**").authenticated()
+                        .requestMatchers("/api/invitations/**").authenticated()
+
+                        // Module Collaboration
+                        .requestMatchers("/api/tasks/**").authenticated()
+                        .requestMatchers("/api/comments/**").authenticated()
+                        .requestMatchers("/api/attachments/**").authenticated()
+                        .requestMatchers("/api/notifications/**").authenticated()
+
+                        // Module Analytics & Exports
+                        .requestMatchers("/api/exports/file/**").permitAll()
+                        .requestMatchers("/api/exports/**").authenticated()
+
+                        // Module Administration (rôle ADMIN requis)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

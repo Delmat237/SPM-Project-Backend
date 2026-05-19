@@ -25,6 +25,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentification", description = "Endpoints d'inscription, de connexion classique ou Google SSO, d'activation OTP et de réinitialisation de mot de passe")
 public class AuthController {
 
     @Value("${app.backend.url}")
@@ -74,6 +77,7 @@ public class AuthController {
     // 🔹 LOGIN (connexion)
     // =============================================
     @PostMapping("/login")
+    @Operation(summary = "Connexion classique", description = "Authentifie un utilisateur avec ses identifiants locaux (email et mot de passe) et génère un token JWT")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             Optional<User> optionalUser = userRepository.findByEmail(loginRequest.getUsername());
@@ -113,6 +117,7 @@ public class AuthController {
     // 🔹 GOOGLE SSO LOGIN
     // =============================================
     @PostMapping("/google")
+    @Operation(summary = "Connexion SSO Google", description = "Vérifie l'ID Token Google, crée automatiquement un compte s'il n'existe pas, et génère un token JWT")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
         try {
             String tokenString = payload.get("token");
@@ -173,6 +178,7 @@ public class AuthController {
     // 🔹 REGISTER (inscription)
     // =============================================
     @PostMapping("/register")
+    @Operation(summary = "Inscription d'un utilisateur", description = "Crée un nouveau compte utilisateur inactif et lui envoie un code d'activation OTP par email")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
         LOGGER.info("Tentative d'inscription pour : " + registerRequest.getUsername());
 
@@ -218,6 +224,7 @@ public class AuthController {
     // 🔹 ACTIVATE (activation du compte)
     // =============================================
     @PostMapping("/verify-otp")
+    @Operation(summary = "Vérifier le code OTP d'activation", description = "Active le compte de l'utilisateur si le code OTP envoyé par email correspond et n'a pas expiré")
     public ResponseEntity<?> verifyOtp(@RequestParam("email") String email, @RequestParam("code") String code) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
@@ -254,6 +261,7 @@ public class AuthController {
 
 
     @PostMapping("/forgot-password")
+    @Operation(summary = "Demande de réinitialisation de mot de passe", description = "Envoie un email contenant un lien de réinitialisation sécurisé à l'adresse spécifiée")
     public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
@@ -289,6 +297,7 @@ public class AuthController {
 
 
     @PostMapping("/reset-password")
+    @Operation(summary = "Réinitialiser le mot de passe", description = "Permet de modifier le mot de passe de l'utilisateur à l'aide du token de réinitialisation envoyé par email")
     public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) {
         Optional<PasswordResetToken> optionalToken = passwordResetTokenRepository.findByToken(token);
 
@@ -311,6 +320,7 @@ public class AuthController {
     }
 
     @PostMapping("/resend-activation")
+    @Operation(summary = "Renvoyer l'OTP d'activation", description = "Génère et renvoie un nouveau code OTP d'activation de compte à l'utilisateur")
     public ResponseEntity<?> resendActivation(@RequestParam("email") String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         

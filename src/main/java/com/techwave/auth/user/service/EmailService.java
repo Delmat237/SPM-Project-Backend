@@ -100,4 +100,44 @@ public class EmailService {
                 "</div><div class='footer'><p>© 2026 Club Génie Informatique ENSPY. Tous droits réservés.</p></div>" +
                 "</div></div></body></html>";
     }
+
+    public void sendProjectInvitationEmail(String to, String inviterName, String projectName, String role, String link) {
+        String html = buildAuthEmail(
+                to,
+                "Invitation au projet " + projectName,
+                inviterName + " vous invite à rejoindre le projet <strong>" + projectName + "</strong> " +
+                        "avec le rôle <strong>" + role + "</strong>. " +
+                        "Cliquez sur le bouton ci-dessous pour accepter l'invitation. " +
+                        "Ce lien est valable 7 jours.",
+                link,
+                "Accepter l'invitation"
+        );
+        sendEmail(to, "📩 Invitation au projet " + projectName, html);
+    }
+
+    /**
+     * Email de confirmation de suppression de compte (RGPD).
+     */
+    public void sendGdprDeletionConfirmation(String to) {
+        String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><style>" +
+                "body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; }" +
+                ".wrapper { padding: 20px; }" +
+                ".container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }" +
+                ".header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 40px 20px; text-align: center; color: #ffffff; }" +
+                ".content { padding: 40px 30px; text-align: center; }" +
+                ".footer { background-color: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; }" +
+                "h2 { color: #0f172a; margin-top: 0; }" +
+                "p { color: #4b5563; line-height: 1.6; font-size: 16px; }" +
+                "</style></head><body><div class='wrapper'><div class='container'>" +
+                "<div class='header'><h1>SPM - Club GI ENSPY</h1></div>" +
+                "<div class='content'>" +
+                "<h2>Suppression de votre compte</h2>" +
+                "<p>Votre compte SPM a été supprimé conformément à votre demande ou suite à une décision administrative.</p>" +
+                "<p>Toutes vos données personnelles ont été anonymisées conformément au RGPD (Règlement Général sur la Protection des Données).</p>" +
+                "<p style='font-size: 14px; color: #94a3b8;'>Si vous n'êtes pas à l'origine de cette action, veuillez contacter l'administrateur.</p>" +
+                "</div><div class='footer'><p>© 2026 Club Génie Informatique ENSPY. Tous droits réservés.</p></div>" +
+                "</div></div></body></html>";
+        sendEmail(to, "🔒 Confirmation de suppression de votre compte SPM", html);
+    }
 }
+

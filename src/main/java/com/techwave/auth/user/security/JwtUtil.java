@@ -17,10 +17,10 @@ import java.util.List;
 @Component
 public class JwtUtil {
 
-    @Value("${JWT_SECRET:myTempSecretForDebugOnly}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${JWT_EXPIRATION_MS:900000}") // valeur par défaut 15min si non définie
+    @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
     private SecretKey key;
