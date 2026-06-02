@@ -1,5 +1,6 @@
 package com.techwave.auth.user.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    /** Origines CORS autorisées, séparées par des virgules (var d'env CORS_ORIGINE). */
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -78,11 +83,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-               "https://spm-project-frontend-psi.vercel.app", // Frontend déployé (Vercel)
-               "http://localhost:3000",                       // Dev local Next.js
-               "http://localhost:5173"                        // Dev local Vite (optionnel)
-        ));
+        config.setAllowedOrigins(
+               Arrays.stream(allowedOrigins.split(","))
+                     .map(String::trim)
+                     .filter(o -> !o.isEmpty())
+                     .toList()
+        );
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setExposedHeaders(Arrays.asList("Authorization"));
