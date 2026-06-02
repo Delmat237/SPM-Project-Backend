@@ -79,8 +79,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-               "http://localhost:3000",
-               "http://localhost:5173"              // Optionnel, utile si tu veux encore tester en local
+               "https://spm-project-frontend-psi.vercel.app", // Frontend déployé (Vercel)
+               "http://localhost:3000",                       // Dev local Next.js
+               "http://localhost:5173"                        // Dev local Vite (optionnel)
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
