@@ -1,7 +1,14 @@
-# 🚀 SPM Backend — Plateforme Modulaire de Gestion de Projet (Style Jira)
+# SPM Backend — Plateforme de Gestion de Projets Agile
 
-> **SPM** (Solution de Gestion de Projets Modulaire) est un backend complet de gestion de projets agile (style Jira) avec collaboration en temps réel, diagramme de Gantt, tableau Kanban dynamique, et exports asynchrones.  
+> **SPM** (Scrum Project Manager) est un backend complet de gestion de projets agile style Jira avec collaboration en temps réel, tableau Kanban, diagramme de Gantt, analytics et exports asynchrones.  
 > Développé par la **Cellule Projet** du **Club Génie Informatique de l'ENSPY**.
+
+![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.5-6DB33F?logo=springboot)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?logo=postgresql)
+![JWT](https://img.shields.io/badge/Auth-JWT_HS512-black?logo=jsonwebtokens)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -194,12 +201,33 @@ docker run -p 8082:8082 --env-file .env spm-backend
 
 ## 🧪 Script de Test de Démonstration
 
-Un script Python interactif est fourni pour valider l'ensemble du workflow REST (de l'inscription au polling d'export). Pour l'exécuter localement :
+Un script Python interactif est fourni pour valider l'ensemble du workflow REST (inscription → OTP → login → projets → tâches → polling export).
 
 ```bash
-python3 "/home/negou/.gemini/antigravity/brain/68f45156-84c1-4716-bf61-56cc454fb45b/scratch/demo_test.py"
+# Installer les dépendances Python
+pip install requests
+
+# Lancer le script (backend démarré sur :8082)
+python3 demo_test.py
 ```
 
 ---
 
-*Développé par l'equipe Backend pour le projet SPM — Club GI ENSPY © 2026*
+## 👥 Contributeurs
+
+| Nom | Email |
+|---|---|
+| Azangue Delmat | azangueleonel9@gmail.com |
+
+
+---
+
+## 🔗 Liens
+
+- **Frontend** : [SPM-Project-Frontend](https://github.com/club-genie-informatique-enspy/SPM-Project-Frontend)
+- **Organisation** : [Club GI ENSPY](https://github.com/club-genie-informatique-enspy)
+- **Swagger UI** : [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
+
+---
+
+*Club Génie Informatique — École Nationale Supérieure Polytechnique de Yaoundé — © 2026*
