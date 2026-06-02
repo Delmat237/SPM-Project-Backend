@@ -215,8 +215,10 @@ public class AuthController {
                     "Inscription réussie ✅. Un code a été envoyé à votre adresse email."
             ));
         } catch (Exception e) {
+            // Le détail technique reste côté serveur ; le client reçoit un message générique.
             LOGGER.severe("Erreur d'inscription : " + e.getMessage());
-            return ResponseEntity.status(400).body(new ErrorResponse("Échec de l'inscription : " + e.getMessage()));
+            return ResponseEntity.status(500).body(new ErrorResponse(
+                    "Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard."));
         }
     }
 

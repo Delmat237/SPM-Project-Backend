@@ -120,5 +120,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT COUNT(t) FROM Task t WHERE t.project.id = :projectId AND t.deletedAt IS NULL " +
             "AND t.status = 'DONE' AND t.updatedAt <= :before")
     long countCompletedTasksBefore(@Param("projectId") Long projectId, @Param("before") LocalDateTime before);
+
+    // =============================================
+    // Rappels d'échéance
+    // =============================================
+
+    /**
+     * Tâches actives, assignées, non terminées, dont l'échéance tombe dans la
+     * fenêtre [from, to]. Sert au planificateur de rappels.
+     */
+    @Query("SELECT t FROM Task t WHERE t.deletedAt IS NULL AND t.assignee IS NOT NULL " +
+            "AND t.status <> 'DONE' AND t.dueDate IS NOT NULL " +
+            "AND t.dueDate BETWEEN :from AND :to")
+    List<Task> findRemindableTasks(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }
 

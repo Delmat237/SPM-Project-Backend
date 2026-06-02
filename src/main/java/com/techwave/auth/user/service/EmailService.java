@@ -116,6 +116,18 @@ public class EmailService {
     }
 
     /**
+     * Email de rappel : une tâche assignée approche de son échéance.
+     */
+    public void sendTaskReminderEmail(String to, String name, String taskTitle, String taskKey,
+                                      String dueLabel, String link) {
+        String description =
+                "La tâche <strong>" + taskKey + " — " + taskTitle + "</strong> arrive à échéance " + dueLabel + ". " +
+                "Pensez à la mettre à jour ou à la terminer à temps.";
+        String html = buildAuthEmail(name, "Rappel d'échéance", description, link, "Ouvrir la tâche");
+        sendEmail(to, "⏰ Rappel : « " + taskTitle + " » arrive à échéance", html);
+    }
+
+    /**
      * Email de confirmation de suppression de compte (RGPD).
      */
     public void sendGdprDeletionConfirmation(String to) {

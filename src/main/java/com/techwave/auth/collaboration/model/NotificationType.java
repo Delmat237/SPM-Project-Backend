@@ -13,5 +13,7 @@ public enum NotificationType {
     /** Vous avez reçu une invitation à un projet */
     INVITATION_RECEIVED,
     /** Le statut d'une tâche assignée a changé */
-    TASK_STATUS_CHANGED
+    TASK_STATUS_CHANGED,
+    /** Rappel : une tâche assignée approche de son échéance */
+    TASK_DUE_SOON
 }

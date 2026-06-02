@@ -45,6 +45,7 @@ public class SecurityConfig {
                         // Endpoints WebSocket (sécurisés au niveau STOMP par token)
                         .requestMatchers("/ws/**").permitAll()
 
+                        .requestMatchers("/api/users/me/**").authenticated()
                         .requestMatchers("/api/users/me").authenticated()
 
                         .requestMatchers("/api/projects/**").authenticated()
